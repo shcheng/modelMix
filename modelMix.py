@@ -8,25 +8,27 @@ import scipy.stats as st
 import sys
 
 class GaussMix:
-  """Gaussian Mixture for K models based on the EM algorithm 
-     for normally distributed random numbers in 2 dimensions.
+  """
+    Gaussian Mixture for K models based on the EM algorithm 
+    for normally distributed random numbers in 2 dimensions.
 
-     Args:
-      Z: sample data array
-      par: a list of K parameter arrays composed of meanX, meanY
-           sigmaX, sigmaY, and sqrt(covXY)
+    Args:
+     Z: sample data array
+     par: a list of K parameter arrays composed of meanX, meanY
+          sigmaX, sigmaY, and sqrt(covXY)
 
-     Attributes:
-      N: Number of sample points
-      D: Dimensionality
-      K: Number of models to fit
-      The following two are just to simplify calculations:
-      X: 2D array of x-component repeated (columnwise) K times 
-      Y: 2D array of y-component repeated (columnwise) K times
+    Attributes:
+     N: Number of sample points
+     D: Dimensionality
+     K: Number of models to fit
+     The following two are just to simplify calculations:
+     X: 2D array of x-component repeated (columnwise) K times 
+     Y: 2D array of y-component repeated (columnwise) K times
   """
 
   def __init__(self, Z, par):
-    """Constructor that initializes the object given: 
+    """
+      Constructor that initializes the object given: 
       the sample array Z and parameter array 
       (meanX, meanY, sigmaX, sigmaY, sqrt(covXY)).
       The dimensionalities are:
@@ -40,8 +42,9 @@ class GaussMix:
     self.Y = repeat( Z[:,1].reshape(self.N,1) , self.K, axis=1 )
    
   def getNormal2dPdf(self, par):
-    """Returns the probability density for each of the rows in Z.
-       output --> N x K
+    """
+      Returns the probability density for each of the rows in Z.
+      output --> N x K
     """
     rho = par[:,4]/(par[:,2]*par[:,3])                      # correlation (K x 1)
     fconstant = (1-rho**2.)**(-1./2.) / (2.*pi*par[:,2]*par[:,3]) # front constant (K x 1)
@@ -56,16 +59,18 @@ class GaussMix:
     return constant*exp(delta) 
 
   def getRespMat(self, par, alpha):
-    """Returns the responsability matrix with dimensionality N x K
-       NOTE: alpha has dimensionality K
+    """
+      Returns the responsability matrix with dimensionality N x K
+      NOTE: alpha has dimensionality K
     """
     num = alpha*self.getNormal2dPdf(par)
     den = sum( num, axis=1 )
     return num / repeat( den.reshape(self.N,1), self.K, axis=1 )
 
   def getParameter(self, respMat):
-    """Returns the updated (with respect to respMat) par
-       array of dimensionality K x 5.
+    """
+      Returns the updated (with respect to respMat) par
+      array of dimensionality K x 5.
     """
     respMatNorm = sum( respMat, axis=0 )
     # Get the components of the means (K long array for each component)
@@ -82,23 +87,26 @@ class GaussMix:
     return array(par)
 
   def getAlpha(self, respMat):
-    """Calculates the mixing weights of each model.
-       The output array has dimension K.
+    """
+      Calculates the mixing weights of each model.
+      The output array has dimension K.
     """
     return sum( respMat, axis=0 ) / (self.N*1.)
 
   def getExpLogLhood(self, par, alpha, respMat):
-    """Calculates the expectation of the log likelihood.
-       Returns a scalar.
+    """
+      Calculates the expectation of the log likelihood.
+      Returns a scalar.
     """
     return sum( sum( respMat * ( log(alpha) + log(self.getNormal2dPdf(par)) ), axis=1 ), axis=0 )
 
 
   def getErrorEllipse(self, par):
-    """Returns the error ellipse parameters given the
-       covariance matrix.
-       The said parameters are:
-        sqrt(eigenVal_1), sqrt(eigenVal_2), angle( eigenVec_1 , <1,0> )
+    """
+      Returns the error ellipse parameters given the
+      covariance matrix.
+      The said parameters are:
+       sqrt(eigenVal_1), sqrt(eigenVal_2), angle( eigenVec_1 , <1,0> )
     """
     outputEllPar = []
     for k in range(self.K):
