@@ -1,3 +1,8 @@
+#
+# GaussMix
+# by Shih-Ho Cheng (shihho.cheng@gmail.com)
+#
+
 from pylab import *
 import scipy.stats as st
 import sys

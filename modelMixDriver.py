@@ -1,5 +1,11 @@
 #!/usr/bin/python 
 
+#
+# modelMixDriver.py
+#   Driver for the modelMix module
+# by Shih-Ho Cheng (shihho.cheng@gmail.com)
+#
+
 from pylab import *
 from matplotlib.patches import *
 import scipy.stats as st
